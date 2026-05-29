@@ -191,7 +191,7 @@ export default function DashboardHome() {
                   }
                 }}
                 placeholder="Today, I will be gentle with myself..."
-                className="flex-1 bg-card-soft border border-glass-border rounded-xl px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:border-teal-muted transition-colors"
+                className="flex-1 bg-card-soft border border-glass-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:border-teal-muted transition-colors"
               />
               <button
                 onClick={() => {
@@ -199,7 +199,7 @@ export default function DashboardHome() {
                     saveIntention(intentionInput.trim());
                   }
                 }}
-                className="px-4 py-2.5 rounded-xl bg-teal/10 text-teal text-sm font-medium hover:bg-teal/20 transition-colors"
+                className="px-5 py-3 rounded-xl bg-teal/10 text-teal text-sm font-medium hover:bg-teal/20 transition-colors"
               >
                 Set
               </button>
@@ -231,7 +231,7 @@ export default function DashboardHome() {
               <button
                 onClick={handleGenerateInsight}
                 disabled={isGeneratingInsight}
-                className="text-xs flex items-center gap-1.5 px-3 py-1.5 bg-teal/10 text-teal rounded-lg font-medium hover:bg-teal/20 transition-colors disabled:opacity-50"
+                className="text-xs flex items-center gap-1.5 px-4 py-2.5 bg-teal/10 text-teal rounded-lg font-medium hover:bg-teal/20 transition-colors disabled:opacity-50"
               >
                 {isGeneratingInsight ? <RefreshCw size={12} className="animate-spin" /> : "Generate"}
               </button>
@@ -248,7 +248,7 @@ export default function DashboardHome() {
                 <button
                   onClick={handleGenerateInsight}
                   disabled={isGeneratingInsight}
-                  className="flex items-center gap-1 text-teal hover:text-teal-strong transition-colors"
+                  className="flex items-center gap-1.5 py-1 px-2 -mr-2 text-teal hover:text-teal-strong transition-colors"
                 >
                   <RefreshCw size={12} className={cn(isGeneratingInsight && "animate-spin")} /> Update
                 </button>

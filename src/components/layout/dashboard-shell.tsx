@@ -16,8 +16,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <AppHeader />
 
-      <main className="relative z-10 lg:ml-[260px] pb-20 lg:pb-0 min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <main className="relative z-10 lg:ml-[260px] pb-24 lg:pb-8 min-h-screen">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-6 lg:py-8">
           {children}
         </div>
       </main>

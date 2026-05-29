@@ -89,17 +89,17 @@ function FeatureCard({
   const accentColors = {
     teal: {
       icon: "text-teal",
-      glow: "group-hover:shadow-[0_0_40px_rgba(143,214,200,0.12)]",
+      glow: "group-hover:shadow-lg",
       border: "group-hover:border-teal-glow",
     },
     gold: {
       icon: "text-gold",
-      glow: "group-hover:shadow-[0_0_40px_rgba(216,177,95,0.1)]",
+      glow: "group-hover:shadow-lg",
       border: "group-hover:border-gold-glow",
     },
     amber: {
       icon: "text-amber",
-      glow: "group-hover:shadow-[0_0_40px_rgba(245,158,11,0.1)]",
+      glow: "group-hover:shadow-lg",
       border: "group-hover:border-amber-glow",
     },
   };
@@ -147,7 +147,7 @@ export default function LandingPage() {
           </Link>
           <Link
             href="/dashboard"
-            className="px-5 py-2.5 text-sm font-medium rounded-xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(143,214,200,0.3)]"
+            className="px-5 py-2.5 text-sm font-medium rounded-xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-300 hover:scale-[1.03] shadow-md hover:shadow-lg"
           >
             Enter MindBridge
           </Link>
@@ -204,7 +204,7 @@ export default function LandingPage() {
             >
               <Link
                 href="/dashboard"
-                className="group flex items-center gap-2 px-7 py-3.5 text-base font-semibold rounded-2xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-400 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(143,214,200,0.35)]"
+                className="group flex items-center gap-2 px-7 py-3.5 text-base font-semibold rounded-2xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-400 hover:scale-[1.03] shadow-md hover:shadow-xl"
               >
                 Start your calm space
                 <ArrowRight
@@ -573,7 +573,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/dashboard"
-            className="group inline-flex items-center gap-2 px-8 py-4 text-base font-semibold rounded-2xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-400 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(143,214,200,0.35)]"
+            className="group inline-flex items-center gap-2 px-8 py-4 text-base font-semibold rounded-2xl bg-teal text-bg-deep hover:bg-teal-strong transition-all duration-400 hover:scale-[1.03] shadow-md hover:shadow-xl"
           >
             Start your calm space
             <ArrowRight
