@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Square, Wind, CheckCircle2 } from "lucide-react";
+import { Play, Square, Wind, CheckCircle2, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { BREATHING_MODES, BREATHING_MICROCOPY } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { generateCustomMeditation } from "@/app/actions/meditation";
+import { useUserId } from "@/hooks/use-user-id";
 
 type BreathingPhase = "idle" | "inhale" | "hold1" | "exhale" | "hold2" | "done";
 
@@ -14,11 +16,22 @@ export default function BreathePage() {
   const [cyclesCompleted, setCyclesCompleted] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
 
+  const userId = useUserId();
+  const [isGeneratingMeditation, setIsGeneratingMeditation] = useState(false);
+  const [meditationScript, setMeditationScript] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
   const stopBreathing = useCallback(() => {
     setPhase("idle");
     setCyclesCompleted(0);
     setTimeLeft(0);
-  }, []);
+    if (synth) {
+      synth.cancel();
+      setIsSpeaking(false);
+    }
+  }, [synth]);
 
   useEffect(() => {
     if (phase === "idle" || phase === "done") return;
@@ -69,6 +82,35 @@ export default function BreathePage() {
   const startBreathing = () => {
     setCyclesCompleted(0);
     setPhase("inhale");
+    
+    // Start audio if we have a meditation
+    if (meditationScript && synth && !isSpeaking) {
+      synth.cancel(); // clear queue
+      const utterance = new SpeechSynthesisUtterance(meditationScript);
+      utterance.rate = 0.85; // Slow down for meditation
+      utterance.pitch = 0.9; // Slightly lower pitch for calmness
+      // Try to find a good English voice
+      const voices = synth.getVoices();
+      const goodVoice = voices.find(v => v.name.includes("Google UK English Female") || v.name.includes("Samantha") || v.name.includes("Natural"));
+      if (goodVoice) utterance.voice = goodVoice;
+      
+      utterance.onend = () => setIsSpeaking(false);
+      utteranceRef.current = utterance;
+      synth.speak(utterance);
+      setIsSpeaking(true);
+    }
+  };
+
+  const handleGenerateMeditation = async () => {
+    if (!userId) return;
+    setIsGeneratingMeditation(true);
+    const res = await generateCustomMeditation(userId);
+    if (res.success && res.data) {
+      setMeditationScript(res.data);
+    } else {
+      alert(res.error || "Failed to generate meditation");
+    }
+    setIsGeneratingMeditation(false);
   };
 
   // Determine circle size based on phase
@@ -122,11 +164,66 @@ export default function BreathePage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left Col: Mode Selector */}
-        <div className="lg:col-span-1 space-y-3">
-          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-2">
-            Select Practice
-          </h2>
+        {/* Left Col: Setup & AI Meditation */}
+        <div className="space-y-6 lg:space-y-8 flex flex-col justify-center">
+          
+          {/* AI Meditation Card */}
+          <div className="glass-card p-5 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-teal" />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-text-primary flex items-center gap-2">
+                <Sparkles size={16} className="text-teal" /> AI Guided Meditation
+              </h3>
+            </div>
+            
+            {!meditationScript ? (
+              <div>
+                <p className="text-sm text-text-muted mb-4">
+                  Generate a custom audio meditation tailored to your mood logs from today.
+                </p>
+                <button
+                  onClick={handleGenerateMeditation}
+                  disabled={isGeneratingMeditation}
+                  className="w-full py-2.5 rounded-xl bg-teal/10 text-teal font-medium hover:bg-teal/20 transition-colors disabled:opacity-50 text-sm flex justify-center items-center gap-2"
+                >
+                  {isGeneratingMeditation ? (
+                    <span className="flex items-center gap-2"><Wind className="animate-spin" size={16}/> Generating...</span>
+                  ) : "Generate Today's Meditation"}
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-xs text-text-secondary leading-relaxed line-clamp-3 mb-3 italic">
+                  "{meditationScript}"
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-teal bg-teal/10 px-2 py-1 rounded">Ready to play</span>
+                  <button 
+                    onClick={() => {
+                      if (isSpeaking && synth) {
+                        synth.cancel();
+                        setIsSpeaking(false);
+                      } else if (meditationScript && synth) {
+                        synth.cancel();
+                        const u = new SpeechSynthesisUtterance(meditationScript);
+                        u.rate = 0.85; u.pitch = 0.9;
+                        synth.speak(u);
+                        setIsSpeaking(true);
+                      }
+                    }}
+                    className="p-2 rounded-full hover:bg-card-soft text-text-muted transition-colors"
+                  >
+                    {isSpeaking ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-text-muted px-1 uppercase tracking-wider">
+              Breathing Pattern
+            </h3>
           {BREATHING_MODES.map((mode) => (
             <button
               key={mode.id}
@@ -151,6 +248,7 @@ export default function BreathePage() {
               <p className="text-xs text-text-muted">{mode.description}</p>
             </button>
           ))}
+        </div>
         </div>
 
         {/* Right Col: Breathing Animation */}

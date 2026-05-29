@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Sparkles,
   RefreshCw,
+  Flame,
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
 import {
@@ -83,6 +84,7 @@ export default function DashboardHome() {
   const setSelectedMood = useAppStore((s) => s.setSelectedMood);
   const streak = useStreak();
   const userId = useUserId();
+  const studentMode = useAppStore((s) => s.studentMode);
   
   // Database Hooks
   const { data: intentionData, mutate: mutateIntention } = useTodayIntention();
@@ -380,9 +382,10 @@ export default function DashboardHome() {
 
 // ─── Mood Timeline Preview ───
 function MoodTimelinePreview() {
-  const moodData = useMoodHistory(7);
+  const { data: moodHistoryData } = useMoodHistory();
+  const moodData = Array.isArray(moodHistoryData) ? moodHistoryData.slice(0, 7) : [];
 
-  if (!moodData || moodData.length === 0) return null;
+  if (moodData.length === 0) return null;
 
   const moodColorMap: Record<string, string> = {
     low: "#7F8C92",
@@ -412,7 +415,7 @@ function MoodTimelinePreview() {
               }}
             />
             <span className="text-[0.625rem] text-text-muted">
-              {new Date(entry.date).toLocaleDateString("en", {
+              {new Date(entry.createdAt).toLocaleDateString("en", {
                 weekday: "short",
               })}
             </span>

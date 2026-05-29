@@ -7,6 +7,7 @@ import {
   MOOD_ANALYSIS_PROMPT,
   JOURNAL_REFLECTION_PROMPT,
   STUDENT_MODE_INSTRUCTION,
+} from "@/lib/ai/prompts";
 import { checkSafety } from "@/lib/ai/safety";
 import { db } from "@/lib/db/drizzle";
 import { aiMemory } from "@/lib/db/schema";
@@ -87,8 +88,9 @@ ${memories.map(m => `- Trigger: ${m.trigger} -> Strategy: ${m.copingStrategy}`).
     }
 
     // 3. Build System Prompt
+    const basePersona = PERSONAS[persona as keyof typeof PERSONAS] || PERSONAS.companion;
     const systemInstruction = getSystemInstruction(
-      PERSONAS[persona].system,
+      basePersona.system,
       studentMode
     ) + memoryInjection;
 
